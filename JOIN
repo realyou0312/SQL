@@ -1,0 +1,35 @@
+--JOIN 연습
+Database -> https://www.w3schools.com/sql/trysql.asp?filename=trysql_select_all
+
+-- 런던에 위치한 공급자(Supplier)가 생산한 상품 목록 조회 : 도시명, 공급자명, 상품명, 상품가격
+SELECT S.City, S.SupplierName, P.ProductName, P.Price From Suppliers S
+Where Products P ON S.SupplierID = P.SupplierID
+AND S.City = 'Londona'
+
+-- 분류가 Seafood 인 상품 목록 (모든 컬럼 조회) : 분류, 상품 모든 컬럼
+SELECT C.CategoryName, P.* From Categories C, Products P
+Where C.CategoryID = P.CategoryID
+
+-- 공급자(Supplier) 국가별, 카테고리 별 상품 건수, 평균가격 : 국가명, 카테고리명, 상품건수, 평균가격
+SELECT S.Country, C.CategoryName, Count(P.Price) 상품건수, AVG(P.Price) 평균가격
+From Suppliers S, Categories C, Products P
+Where S.SupplierID = P.SupplierID
+and C.CategoryID = P.CategoryID
+group by S.Country, C.CategoryName
+
+-- 상품 카테고리별, 국가별, 도시별 주문건수 2건 이상인 목록 : 카테고리명, 국가명, 도시명, 주문건수
+SELECT C.CategoryName, Cu.Country, Cu.City, Count(O.OrderID) 주문건수
+FROM Customers Cu, Orders O, OrderDetails OD, Products P, Categories C
+Where Cu.CustomerID = O.CustomerID
+AND O.orderID = OD.orderID
+AND OD.ProductID = P.ProductID
+AND P.CategoryID = C.CategoryID
+Group By C.CategoryName, Cu.Country, Cu.City
+HAVING 주문건수>=2;
+
+-- 주문자, 주문정보, 직원정보, 배송자정보 통합 조회 : 고객컬럼 전체, 주문정보 컬럼 전체, 배송자 정보 컬럼 전체 (4개 테이블 조인)
+SELECT C.*, O.*, S.*
+FROM Customers C, Employee E, Shippers S, Orders O
+Where C.CustomerID = O.CustomerID
+And E.EmployeeID = O.EmployeeID
+AND S.ShipperID = O.ShipperID
